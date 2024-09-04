@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Navbar from "../Shared/Navbar/Navbar";
 import { useContext } from "react";
 import { AuthContext } from "../../provider/AuthProvider";
@@ -6,31 +6,39 @@ import { AuthContext } from "../../provider/AuthProvider";
 
 const Login = () => {
 
-  const {signIn} = useContext(AuthContext);
+  const { signIn } = useContext(AuthContext);
 
-    const handleLogin = e =>{
-        e.preventDefault();
-        console.log(e.currentTarget);
-      const form = new FormData(e.currentTarget);
-     const email = form.get('email');
-     const password = form.get('password');
-     console.log(email , password);
- signIn(email,password)
- .then(result => {
-  console.log(result.user)
- })
- .catch(error => {
-  console.log(error);
- })
+  const location = useLocation();
+  console.log("location in the login page", location);
 
-    }
+  const navigate = useNavigate();
 
-    return (
-        <div>
-            <Navbar></Navbar>
-            <h2 className="text-3xl text-center mt-10">Please Login</h2>
+  const handleLogin = e => {
+    e.preventDefault();
+    console.log(e.currentTarget);
+    const form = new FormData(e.currentTarget);
+    const email = form.get('email');
+    const password = form.get('password');
+    console.log(email, password);
+    signIn(email, password)
+      .then(result => {
+        console.log(result.user);
 
-            <form onSubmit={handleLogin} className="card-body md:w-3/4 lg:w-1/2 mx-auto">
+        // Navigate after login
+        navigate(location?.state ? location.state : '/');
+      })
+      .catch(error => {
+        console.log(error);
+      })
+
+  }
+
+  return (
+    <div>
+      <Navbar></Navbar>
+      <h2 className="text-3xl text-center mt-10">Please Login</h2>
+
+      <form onSubmit={handleLogin} className="card-body md:w-3/4 lg:w-1/2 mx-auto">
         <div className="form-control">
           <label className="label">
             <span className="label-text">Email</span>
@@ -50,10 +58,10 @@ const Login = () => {
           <button className="btn btn-primary">Login</button>
         </div>
       </form>
-        <p className="text-center">Do not have an account  <Link className="text-red-500 font-bold" to={'/register'}>Register</Link></p>   
-</div>
-       
-    );
+      <p className="text-center">Do not have an account  <Link className="text-red-500 font-bold" to={'/register'}>Register</Link></p>
+    </div>
+
+  );
 };
 
 export default Login;
